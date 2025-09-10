@@ -1,3 +1,4 @@
+os.execute('ver')
 --- STEAMODDED HEADER
 --- MOD_NAME: Test
 --- MOD_ID: TEST_STAS
@@ -22,55 +23,68 @@ SMODS.Atlas{
 SMODS.Joker{
     key = "stas",
     loc_txt = {
-        name = "Stas ThinkPad",
+        name = "Bacon and Games Joker",
         text = {
-            "{X:red,C:white}X1.5{} Mult on Windows",
-            "or {X:red,C:white}X2.5{} Mult on Linux",
+            "{C:red}+4{} and {X:red,C:white}X1.5{} Mult on Windows",
+            "or {C:red}+2{} and {X:red,C:white}X2.5{} Mult on Linux",
         }
     },
     atlas = "stas",
     pos = {x = 0, y=0},
+    cost = 6,
+    rarity = 2,
+    blueprint_compat = true,
+    eternal_compat = true,
+    perishable_compat = true,
+    unlocked = true,
+    discovered = true,
     config =
         {extra =
             {
                 -- умножение множителя
-                Xmult = function()
-                    -- линукс
-                    if os.execute('uname -a') then
-                        return 2.5
-                    -- винда
-                    elseif os.execute("ver") then
-                        return 1.25
-                    else
-                        return 1
-                    end
-                end,
+                Xmult = 1,
                 -- плюс к множителю
-                multvar = function ()                    
-                    -- линукс
-                    if os.execute('uname -a') then
-                        return 2.5
-                    -- винда
-                    elseif os.execute("ver") then
-                        return 1.25
-                    else
-                        return 1
-                    end
-                end
+                mult = 1,
             }
         },
     loc_vars = function(self,info_queue,center)
-        return {vars = {center.ability.extra.Xmult}}
+        return {vars =
+            {
+                center.ability.extra.Xmult,
+                center.ability.extra.mult
+            }
+        }
     end,
 
     -- прок карты
     calculate = function(self,card,context)
         if context.joker_main then
             return{
-                card=card,
-                Xmult_mod = card.ability.extra.Xmult,
-                message = "X" .. card.ability.extra.Xmult,
-                colour = G.C.MULT
+                func = function()
+                    -- линукс
+                    if os.execute('uname -a') then
+                        print(os.execute('uname -a'))
+                        card.ability.extra.mult = 2
+                        card.ability.extra.Xmult = 2.5
+
+                        SMODS.calculate_effect({message = "linux"}, card)
+
+                        SMODS.calculate_effect({mult = card.ability.extra.mult}, card)
+                        SMODS.calculate_effect({Xmult = card.ability.extra.Xmult}, card)
+                    -- винда
+                    elseif os.execute("ver") then
+                        card.ability.extra.mult = 4
+                        card.ability.extra.Xmult = 1.5
+
+                        SMODS.calculate_effect({message = "windows"}, card)
+
+                        SMODS.calculate_effect({mult = card.ability.extra.mult}, card)
+                        SMODS.calculate_effect({Xmult = card.ability.extra.Xmult}, card)
+                    else
+                        SMODS.calculate_effect({mult = card.ability.extra.mult}, card)
+                        SMODS.calculate_effect({Xmult = card.ability.extra.Xmult}, card)
+                    end
+                end
             }
         end
     end,
