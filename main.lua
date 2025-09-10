@@ -33,18 +33,24 @@ SMODS.Joker{
     config =
         {extra =
             {
+                -- умножение множителя
                 Xmult = function()
+                    -- линукс
                     if os.execute('uname -a') then
                         return 2.5
+                    -- винда
                     elseif os.execute("ver") then
                         return 1.25
                     else
                         return 1
                     end
                 end,
-                multvar = function ()
+                -- плюс к множителю
+                multvar = function ()                    
+                    -- линукс
                     if os.execute('uname -a') then
                         return 2.5
+                    -- винда
                     elseif os.execute("ver") then
                         return 1.25
                     else
@@ -56,11 +62,12 @@ SMODS.Joker{
     loc_vars = function(self,info_queue,center)
         return {vars = {center.ability.extra.Xmult}}
     end,
+
+    -- прок карты
     calculate = function(self,card,context)
         if context.joker_main then
             return{
                 card=card,
-                
                 Xmult_mod = card.ability.extra.Xmult,
                 message = "X" .. card.ability.extra.Xmult,
                 colour = G.C.MULT
